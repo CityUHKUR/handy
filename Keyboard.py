@@ -1,21 +1,6 @@
 from threading import Thread, Semaphore
 from queue import PriorityQueue
 
-global isWindows
-
-isWindows = False
-
-try:
-    # from win32api import STD_INPUT_HANDLE
-    # from win32console import GetStdHandle, KEY_EVENT, ENABLE_ECHO_INPUT, ENABLE_LINE_INPUT, ENABLE_PROCESSED_INPUT
-    isWindows = True
-except ImportError as e:
-    import sys
-    import select
-    import termios
-    import tty
-
-
 class Button(Thread):
   #debug
     def __init__(self, key, keylog, topics, CMD,OnCMD, OffCMD, lock, state = False, callback = None, buttonType = 'trigger'):
@@ -121,39 +106,44 @@ class Button(Thread):
 
 
 class KeyboardLogger(Thread):
+  import curses
   def __init__(self):
     super().__init__(daemon=True)
     # return super().__init__(group, target, name, args, kwargs, *, daemon)
+    
     self.keylog = PriorityQueue(maxsize=1)
     self.lock = Semaphore(2)
+    self.stdscr = self.terminal_init()
+    self.keystore = ''
 
   def run(self):
     while True:
       if self.keylog.empty():
         self.readKey()  
-        self.update()
+        # self.update()
 
     
+  def terminal_init(self):
+    stdscr = self.curses.initscr()
+    self.curses.noecho()
+    self.curses.cbreak()
+    stdscr.keypad(True)
+    return stdscr
+
+  ### Closing the input
+  def terminal_close(self):
+    self.curses.nocbreak()
+    self.stdscr.keypad(False)
+    self.curses.echo()
+    self.curses.endwin()
+
+
 
   def readKey(self):
-    global isWindows
 
     # accquire lock for reading
     self.lock.acquire()
-
-    if isWindows:
-      import msvcrt
-      # using binary character, for UNICODE character use msvcrt.getwch()
-      ch = msvcrt.getwch()
-
-
-    else:
-      fd = sys.stdin.fileno()
-      old_settings = termios.tcgetattr(fd)
-      with sys.stdin.fileno() as fd, termios.tcgetattr(fd) as old_settings:
-        tty.setraw(sys.stdin.fileno())
-        ch = sys.stdin.read(1)
-        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+    ch = self.stdscr.getkey()
 
 
     ### TODO : AVOID CONTINUOUS PRESSING CMD - REQUIRE PRESS AND RELEASE FOR EACH ACTIVITY
