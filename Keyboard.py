@@ -1,165 +1,212 @@
 from threading import Thread, Semaphore
 from queue import PriorityQueue
 
-class Button(Thread):
+
+
+class Button:
+  """
+  A :class: `Button` represents a callback action on button is pressed(and release) depends on its button type
+  :param 
+  """
   #debug
-    def __init__(self, key, topics,OnCMD, OffCMD, state = False, callback = None, buttonType = 'trigger'):
-      # Invoke base class constructor before overriding  __init__ construct
-      super().__init__()
-
-      # assign objects
-
-      # which button on keyboard to trigger the event
-      ### TODO : Key Combination
-      self.key = key
-      ### TODO : Share Keylogged character among Buttons
-      # # which keylog to Listen
-      # self.keylog = keylog
-      # connect button event to selected topics
-      self.topics = topics
-      # On Toggle/Trigger Command
-      self.OnCMD = OnCMD
-      # Off Toggle Command
-      self.OffCMD = OffCMD
-      # Callback function to trigger
-      self.callback = callback
-      # Default state of the button event
-      self.state = state
-      # Threading Lock
-      self.lock = Semaphore(value=1)
-      # Button type (Toggle/Trigger)
-      self.buttonType = buttonType
-       
-    # def run(self):
-    #   # ch = self.keylog()
-    #   if not len(ch) == 0 and ord(ch) == ord(self.key):
-    #     self.lock.acquire()
-    #     self.call()
-    #     self.lock.release()
-
-
-    def args(self):
-      return  [self.topics, self.cmd(), None]
-
-    def call(self):  
-
-      # default arugments
-      def toggle(self):
-
-        self.lock.acquire()
-
-        # inverse the current state at each time button is pressed and released
-        self.state = not self.state
-        
-
-        # parse arguments to callback
-        self.callback(*self.args())
-
-        self.lock.release()
-
-      
-      def trigger(self):
-        self.lock.acquire()
-        # one time trigger upon pressed and released
-        self.state = True
-
-        # parse arguments to callback
-        self.callback(*self.args())
-
-        # Trigger off
-        self.state = False
-
-        self.lock.release()
-
-
-      buttoneEvent = {
-        'toggle':toggle,
-        'trigger':trigger
+  def __init__(self, key, topics,ON_CMD, OFF_CMD, state = False, callback = None, button_type = 'trigger'):
+    '''
+    @param key -> str : the keystroke which enable the button event
+    @param topics -> object : the name of the topics to call
+    @param ON_CMD -> object : the Enable command to call
+    @param OFF_CMD -> object : the Disable command to call
+    @param state -> bool : the default state of Enable/Disable
+    @param callback -> object : the callback to call
+    @param button_type -> str :  {
+      'trigger' : only ON CMD will send
+      'toggle' : toggle ON/OFF evenly for each time the button is pressed
       }
+    '''
 
-      # Trigger button event depend on button type on config
-      buttoneEvent.get(self.buttonType, lambda : None)(self)
+    #
+    # Check params type
+    #
+
+    assert type(key) == str , "Sorry, we expect param \'key\' should be a type of string instead of {key}".format(key=type(key))
+
+    # which button on keyboard to trigger the event
+    ### TODO : Key Combination
+    self.key = key
+
+    # connect button event to selected topics
+    self.topics = topics
+    # On Toggle/Trigger Command
+    self.OnCMD = ON_CMD
+    # Off Toggle Command
+    self.OffCMD = OFF_CMD
+    # Callback function to trigger
+    self.callback = callback
+    # Default state of the button event
+    self.state = state
+    # Threading Lock
+    self.lock = Semaphore(value=1)
+    # Button type (Toggle/Trigger)
+    self.buttonType = button_type
 
 
+  def args(self):
+    """
+    return arguments at the calling instance
+    @return [
+      topics -> str,
+      current_command -> object
+      None -> None
+    ]
+    """
+    return  [self.topics, self.cmd(), None]
 
+  def call(self):  
+    """
+    @callable calling the callback with relevant button type with argument at that instance
+    """
 
-    def cmd(self):
+    # default arugments
+    def toggle(self):
+      """
+      helper fucntion for toggle type button
+      """
 
-      if self.state:
-        #ifdebug
-        print("current command:{cmd}".format(cmd=str(self.OnCMD)))
-        #endif
-        return self.OnCMD
-        
+      self.lock.acquire()
 
-      else:
-        #ifdebug
-        print("current command:{cmd}".format(cmd=str(self.OnCMD)))
-        #endif
-        return self.OffCMD
+      # inverse the current state at each time button is pressed and released
+      self.state = not self.state
 
-    def terminate(self):
-      self.terminate()
+      # parse arguments to callback
+      self.callback(*self.args())
 
+      self.lock.release()
 
-
-
-class KeyboardLogger(Thread):
-  import curses
-  import sys
-  def __init__(self):
-    super().__init__(daemon=True)
-    # return super().__init__(group, target, name, args, kwargs, *, daemon)
     
-    self.keylog = PriorityQueue(maxsize=1)
-    self.lock = Semaphore(2)
+    def trigger(self):
+      """
+      helper function for trigger type button
+      """
 
-    # Initialize terminal  
-    self.stdscr = self.curses.initscr()
-    # self.keystore 
+      self.lock.acquire()
+      # one time trigger upon pressed and released
+      self.state = True
+
+      # parse arguments to callback
+      self.callback(*self.args())
+
+      # Trigger off
+      self.state = False
+
+      self.lock.release()
+
+
+    buttoneEvent = {
+      'toggle':toggle,
+      'trigger':trigger
+    }
+
+    buttoneEvent.get(
+      self.buttonType,
+       lambda : None
+       )(self)
+
+  def pressed(self):
+    if self.buttonType == 'trigger':
+      self.call()
+
+  def released(self):
+    if self.buttonType == 'toggle':
+      self.call()
+
+
+
+  def cmd(self):
+
+    if self.state:
+      #ifdebug
+      #print("current command:{cmd}".format(cmd=str(self.OnCMD)))
+      #endif
+      return self.OnCMD
+      
+
+    else:
+      #ifdebug
+      #print("current command:{cmd}".format(cmd=str(self.OnCMD)))
+      #endif
+      return self.OffCMD
+
+
+
+
+class Listener(Thread):
+  import subprocess
+  import os 
+  from pynput import keyboard
+
+  """
+  @class a keypress Listener for buttons
+  """
+  output = subprocess.check_output(['bash','-c','DISPLAY=:0 python -c \'import pynput\''])
+  def __init__(self,buttons):
+    """
+    :param buttons: array of buttons link to this KeyboardListener
+    """
+    super().__init__(daemon=True)
+
+    self._keylog = PriorityQueue(maxsize=1)
+    self._buttons = {
+      button.key : button
+      for button in buttons
+    }
+    self._lock = Semaphore(2)
+    self.listener = self.keyboard.Listener(
+      on_press=self.on_press,
+       on_release=self.on_release)
+
+
+  def start(self):
+    # disale echo keypress to terminal
+    self.os.system("stty -echo")
+
+    with self.keyboard.Listener(
+      on_press=self.on_press,
+      on_release=self.on_release) as listener:
+      listener.join()
+
 
   def run(self):
-    self.curses.wrapper(self.logkey())
+    while True:
+      self.listener.run()
 
-  def logkey(self):
-    self.curses.def_prog_mode()
-    try:
-      while True:
-        self.readKey()
-    except KeyboardInterrupt:
-      self.curses.endwin()
+  def on_press(self,key):
 
+    pressed_key = self._buttons.get(
+      str(key).replace('\'',''), 
+      lambda : None)
 
+    getattr(
+      pressed_key,'pressed',
+     lambda : None)()
 
-  def readKey(self):
+  def on_release(self,key):
 
-    # accquire lock for reading
-    self.lock.acquire()
-    ch = self.stdscr.getkey()
-    ### TODO : AVOID CONTINUOUS PRESSING CMD - REQUIRE PRESS AND RELEASE FOR EACH ACTIVITY
-    self.keylog.put(ch, block=True)
-    # release lock
-    self.lock.release()
+    releasd_key = self._buttons.get(
+      str(key).replace('\'',''),
+      lambda : None)
 
-  def get(self):
-    return self.keylog.get()
+    getattr(
+      releasd_key,
+    'released',
+    lambda : None)()
 
   def __enter__(self):
-    self.curses.savetty()
-    self.curses.def_shell_mode()
-    self.curses.noecho()
-    self.curses.cbreak()
-    self.curses.nl()
-    self.stdscr.keypad(True)
-    return self
+    # disale echo keypress to terminal
+    self.os.system("stty -echo")
+    self.listener.start()
+    return self.listener
 
 
   def __exit__(self,exec_type,exc_value,traceback):
-    self.curses.resetty()
-    self.curses.endwin()
-
-  # def update(self):
-  #   self.keystore = self.get()
-
-  # def read(self):
-  #   return self.keystore
+    # recover echo keypress
+    self.os.system("stty echo")
+    self.listener.stop()
