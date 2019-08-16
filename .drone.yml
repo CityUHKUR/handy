@@ -14,14 +14,15 @@ steps:
       from_secret: sonar_host
     sonar_token:
       from_secret: sonar_token
-  trigger:
+  wehn:
     branch:
-    - master
-    - feature/*
+      include:
+      - master
+      - feature/*
     event:
-    - push
-    - pull_request
-
+      include:
+      - push
+      - pull_request
 +   ver: 1.0
 +   timeout: 20
 +   sources: .
@@ -29,7 +30,6 @@ steps:
 +   showProfiling: true
 
 ---
-
 kind: pipeline
 name: python-3
 
