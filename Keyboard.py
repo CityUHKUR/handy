@@ -186,16 +186,9 @@ class Listener:
   def start(self):
     # disale echo keypress to terminal
     self.os.system("stty -echo")
-
-    with self.keyboard.Listener(
-      on_press=self.on_press,
-      on_release=self.on_release) as listener:
-      listener.join()
+    self.keyboard_listener.start()
 
 
-  def run(self):
-    while True:
-      self.keyboard_listener.run()
 
   def on_press(self,key):
 
