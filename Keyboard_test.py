@@ -7,22 +7,11 @@ from unittest import TestCase
 from unittest.mock import patch
 
 get_input = ''
-
 def mock_input(topics,cmd,default = None):
   global get_input
   get_input  = '{topics}: {CMD} received'.format(topics = str(topics), CMD = str(cmd))
-
-
-
-
-
 F_Button = Button('f',{'topics':'console','on_cmd':'Hello World','off_cmd':'Fuck World','args':[]},callback=mock_input,button_type='trigger')
 buttons = [F_Button]
-
-
-
-
-
 
 class KeyboardTestCase(TestCase):
 
