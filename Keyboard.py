@@ -34,19 +34,6 @@ class Button:
         'trigger' : only ON CMD will send on Button is pressed
         'toggle' : ON/OFF CMD will send alternatively each time the button is pressed
         }
-    Attributes
-    ----------
-      topics :
-
-      ON_CMD :
-
-      OFF_CMD :
-
-      callback :
-
-      state :
-
-      button_type :
     """
 
     #
