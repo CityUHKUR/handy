@@ -37,13 +37,11 @@ class Button:
     #
     # Check params type
     #
-
     assert type(key) == str , "Sorry, we expect param \'key\' should be a type of string instead of {key}".format(key=type(key))
 
     # which button on keyboard to trigger the event
     ### TODO : Key Combination
     self.key = key
-
     # connect button event to selected topics
     self.topics = comm.get('topics','')
     # On Toggle/Trigger Command
