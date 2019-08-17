@@ -19,10 +19,7 @@ steps:
       include:
       - master
       - feature/*
-    event:
-      include:
-      - push
-      - pull_request
+      
 +   ver: 1.0
 +   timeout: 20
 +   sources: .
