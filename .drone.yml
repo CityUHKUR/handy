@@ -12,6 +12,12 @@ steps:
       from_secret: sonar_token      
 +   level: TRACE
 +   showProfiling: true
+  commands:
+  - sonar-scanner \
+  -Dsonar.projectKey=handy \
+  -Dsonar.sources=. \
+  -Dsonar.host.url=http://sonarqube.deepmatter.me \
+  -Dsonar.login=3066687518dd6c7f687749d38013b6efde518751
 ---
 kind: pipeline
 name: python-3
