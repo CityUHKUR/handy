@@ -16,7 +16,6 @@ class Button:
           'on_cmd' : <on_cmd>
           'off_cmd' : <off_cmd>
           'args' : [args*]
-
         }
       # topics -> type(A) :
       #   the first parameters for callback
