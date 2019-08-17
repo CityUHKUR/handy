@@ -2,10 +2,6 @@
 kind: pipeline
 name: analysis
 
-platform:
-  os: linux
-  arch: arm64
-
 steps:
 - name: code-analysis
   image: aosapps/drone-sonar-plugin
@@ -13,13 +9,7 @@ steps:
     sonar_host:
       from_secret: sonar_host
     sonar_token:
-      from_secret: sonar_token
-  when:
-    branch:
-      include:
-      - master
-      - feature/*
-      
+      from_secret: sonar_token      
 +   ver: 1.0
 +   timeout: 20
 +   sources: .
