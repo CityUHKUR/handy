@@ -2,7 +2,6 @@
 ###### a input handler library
 ---
 [![Build Status](https://drone.deepmatter.me/api/badges/randyt1027/handy/status.svg)](https://drone.deepmatter.me/randyt1027/handy)
-[![Quality gate](http://sonarqube.deepmatter.me/api/project_badges/quality_gate?project=handy)](http://sonarqube.deepmatter.me/dashboard?id=handy)
 
 ## Modules
 ### Keyboard
