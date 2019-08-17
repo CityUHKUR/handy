@@ -1,7 +1,6 @@
 class Button:
   """
   A `class` : `Button` represents a callback action on button is pressed(and release) depends on its button type
-  
   """
   #debug
   def __init__(self, key, comm : dict, state = False, callback = None, button_type = 'trigger'):
