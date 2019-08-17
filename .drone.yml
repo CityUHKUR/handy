@@ -9,7 +9,9 @@ steps:
     sonar_host:
       from_secret: sonar_host
     sonar_token:
-      from_secret: sonar_token      
+      from_secret: sonar_token
++   ver: 0.0.1
++   timeout: 120
 +   level: TRACE
 +   showProfiling: true
 ---
