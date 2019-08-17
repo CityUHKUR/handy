@@ -4,7 +4,6 @@
 [![Build Status](https://drone.deepmatter.me/api/badges/randyt1027/handy/status.svg)](https://drone.deepmatter.me/randyt1027/handy)
 [![Quality Gate Status](http://sonarqube.deepmatter.me/api/project_badges/measure?project=handy&metric=alert_status)](http://sonarqube.deepmatter.me/dashboard?id=handy)
 
-
 ## Modules
 ### Keyboard
 
