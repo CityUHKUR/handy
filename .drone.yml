@@ -28,7 +28,6 @@ steps:
 +   sources: .
 +   level: DEBUG
 +   showProfiling: true
-
 ---
 kind: pipeline
 name: python-3
