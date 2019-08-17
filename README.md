@@ -47,7 +47,6 @@ Returns
         args -> [args*]
     ]
 
-
 ##### call
 ```python
 Button.call()
