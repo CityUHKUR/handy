@@ -10,9 +10,7 @@
 ```python
 Button(self, key, comm, state=False, callback=None, button_type='trigger')
 ```
-
 A `class` : `Button` represents a callback action on button is pressed(and release) depends on its button type
-
 Parameters
 ----------
       key -> str :
