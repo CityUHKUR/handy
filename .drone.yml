@@ -10,12 +10,17 @@ steps:
       from_secret: sonar_host
     sonar_token:
       from_secret: sonar_token
+  environment:
+    sonar_host:
+      from_secret: sonar_host
+    sonar_token:
+      from_secret: sonar_token
   commands:
       - env
       - sonar-scanner -Dsonar.projectKey=${DRONE_REPO}
         -Dsonar.projectName=${DRONE_REPO}
-        -Dsonar.host.url=$(sonar_host)
-        -Dsonar.login=$(sonar_token)
+        -Dsonar.host.url=$sonar_host
+        -Dsonar.login=$sonar_token
         -Dsonar.sources=.
 +   ver: 0.0.1
 +   timeout: 120
