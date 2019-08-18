@@ -1,7 +1,7 @@
 # Handy
 ###### a input handler library
 ---
-[![Build Status](https://drone.deepmatter.me/api/badges/randyt1027/handy/status.svg)](https://drone.deepmatter.me/randyt1027/handy)
+[![Build Status](https://drone.deepmatter.me/api/badges/hotung1027/handy/status.svg)](https://drone.deepmatter.me/hotung1027/handy)
 
 ## Modules
 ### Keyboard
