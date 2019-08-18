@@ -16,7 +16,6 @@ steps:
     sonar_token:
       from_secret: sonar_token
   commands:
-      - env
       - sonar-scanner -Dsonar.projectKey=${DRONE_REPO}
         -Dsonar.projectName=${DRONE_REPO}
         -Dsonar.host.url=$sonar_host
