@@ -160,7 +160,7 @@ class Button(AbstractButton):
         the callback function takes 3 parameters
                
 
-      state -> bool :
+      state -> bool :o 
         the default state of Enable/Disable
 
       button_type -> str :
