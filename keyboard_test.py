@@ -1,4 +1,6 @@
-from Keyboard import Listener, Button
+from keyboard import Listener, Button
+import numpy as np
+from parser import Parser
 # from pynput.keyboard import Key, Controller
 from pynput.keyboard import Key, Controller as KeyboardController
 import unittest
@@ -10,8 +12,8 @@ get_input = ''
 def mock_input(topics,cmd,default = None):
   global get_input
   get_input  = '{topics}: {CMD} received'.format(topics = str(topics), CMD = str(cmd))
-F_Button = Button('f',{'topics':'console','on_cmd':'Hello World','off_cmd':'Fuck World','args':[]},callback=mock_input,button_type='trigger')
-buttons = [F_Button]
+F_Button = Button('f','console', 'Hello World','Fuck World',[],callback=mock_input,button_type='trigger')
+buttons = Parser('UR.keymap',[np.str,np.str,np.str,np.str,np.array],delimiter=' ').initialize(Button,mock_input,[1,2,3,4,5])
 
 class KeyboardTestCase(TestCase):
 

@@ -1,34 +1,168 @@
-class Button:
+class AbstractButton:
   """
   A `class` : `Button` represents a callback action on button is pressed(and release) depends on its button type
-  
-  """
-  #debug
-  def __init__(self, key, comm : dict, state = False, callback = None, button_type = 'trigger'):
+  """  
+  def __init__(self, key : str, comm : dict, index : list, callback : callable = None,
+   button_attributes : dict = {'state': False, 'button_type': 'trigger'}):
     """
     Parameters
     ----------
       key -> str :
         the keystroke which enable the button event
-      commu -> dict :
-        an dictonary contains topcis,on_cmd, off_cmd, and other get_args_at_instance
-        {
-          'topics' : <topics>
-          'on_cmd' : <on_cmd>
-          'off_cmd' : <off_cmd>
-          'args' : [args*]
-
+      comm -> dict :
+        an order dictonary contains parameters for the callback
+        contains
+        switch -> dict :
+          an dictonary contains object to pass on enable/disable
+          {
+            on : object to pass on enable
+            off : object to pass on disable
+          }
+      idx -> list :
+        an ordered list of key passing parameters in this positional order to the callable function
+      callback -> callable :
+        callable function to bind with the key
+      button_attribute -> dict :
+        attributes {        
+          state -> bool :
+            default state to relationship of enable/disable when the button is pressed
+            default false : button pressed => enable(true)
+            default true  : button pressed => disable(false)
+          button_type -> str:
+            'trigger' : only enable when the button is pressed
+            'toggle'  : remain enable/disable when the button is pressed,
+             press again to disable/enable
         }
-      # topics -> type(A) :
-      #   the first parameters for callback
-      # on_cmd -> type(B) :
-      #   the ENABLE command to call
-      # off_cmd -> type(B) :
-      #   the Disable command to call
+    """
+    #
+    # Check params type
+    #
+
+    assert type(key) == str , "Sorry, we expect param \'key\' should be a type of string instead of {key}".format(key=type(key))
+
+    # which button on keyboard to trigger the event
+    ### TODO : Key Combination
+    self.key = key
+
+    self.__comm = comm
+
+    self.__switch = self.__comm.get('switch', {} )
+
+    self.__on = self.__switch.get('on', lambda : None)
+
+    self.__off = self.__switch.get('off', lambda : None)
+
+    self.__index = index
+                                                                                                                                                                                                                                                                                                                                                                                       
+    # Callback function to trigger
+    self.__callback = callback
+
+    # Default state of the button event
+    self.__state = button_attributes.get('state',False)
+
+    # Button type (Toggle/Trigger)
+    self.__button_type = button_attributes.get('button_type','')
+
+
+  def __index__(__from__ = 1, __to__ = 5):
+    return [x for x in range(__from__, __to__ + 1)]
+
+
+  def __get_args_at_instance__(self):
+    """
+    Returns
+    -------
+     arguments at the calling instance
+      @return list of arugments follow the order of position index
+    """
+    arguments = [
+      self.__current_cmd__() if key == 'switch' 
+     else self.__comm.get(key, lambda *args : None)
+     for key in self.__index]
+
+    return  arguments
+
+  def __call__(self):  
+    """
+    @callable calling the callback with relevant button type with argument at that instance
+    """
+
+    # default arugments
+    def __toggle__(self):
+      """
+      helper fucntion for toggle type button
+      """
+      # inverse the current state at each time button is pressed and released
+      self.__state = not self.state
+
+      # parse arguments to callback
+      self.__callback(*self.__get_args_at_instance__())
+
+    
+    def __trigger__(self):
+      """
+      helper function for trigger type button
+      """
+      self.__state = True
+      # parse arguments to callback
+      self.__callback(*self.__get_args_at_instance__())
+      self.__state = False
+
+    button_event = {
+      'toggle':__toggle__,
+      'trigger':__trigger__
+    }
+
+    button_event.get(
+      self.__button_type,
+       lambda *args : None
+       )(self)
+
+  def pressed(self):
+    self.__call__()
+
+  def released(self):
+    # not implemented
+    pass
+
+
+
+  def __current_cmd__(self):
+
+    if self.__state:
+      return self.__on
+
+    else:
+      return self.__off
+
+
+class Button(AbstractButton):
+  """
+  A `class` : `Button` represents a callback action on button is pressed(and release) depends on its button type
+  
+  """
+  #debug
+  def __init__(self, key, topics, on_cmd, off_cmd, args, callback = None, state = False, button_type = 'trigger'):
+    """
+    Parameters
+    ----------
+      key -> str :
+        the keystroke which enable the button event
+      topics -> str:
+        the first parameters for callback
+      on_cmd -> str :
+        the ENABLE command to call
+      off_cmd -> str :
+        the Disable command to call
+      'args' : [args*]
+        remainder paramters
+      callback -> (str,str,str) :
+        the callback function takes 3 parameters
+               
+
       state -> bool :
         the default state of Enable/Disable
-      callback -> (A,B,C) :
-        the callback function takes 3 parameters
+
       button_type -> str :
         {
         'trigger' : only ON CMD will send on Button is pressed
@@ -44,108 +178,23 @@ class Button:
 
     # which button on keyboard to trigger the event
     ### TODO : Key Combination
-    self.key = key
-
-    # connect button event to selected topics
-    self.topics = comm.get('topics','')
-    # On Toggle/Trigger Command
-    self.on_cmd = comm.get('on_cmd','')
-    # Off Toggle Command
-    self.off_cmd = comm.get('off_cmd','')
-    # optional arguments
-    self.args = comm.get('get_args_at_instance',[])
-    # Callback function to trigger
-    self.callback = callback
-    # Default state of the button event
-    self.state = state
-    # Button type (Toggle/Trigger)
-    self.button_type = button_type
-
-
-  def get_args_at_instance(self):
-    """
-    Returns
-    -------
-     arguments at the calling instance
-      @return [
-        topics -> str,
-        current_command -> object
-        None -> None
-      ]
-    """
-    return  [self.topics, self.current_cmd(), None]
-
-  def call(self):  
-    """
-    @callable calling the callback with relevant button type with argument at that instance
-    """
-
-    # default arugments
-    def toggle(self):
-      """
-      helper fucntion for toggle type button
-      """
-      # inverse the current state at each time button is pressed and released
-      self.state = not self.state
-
-      # parse arguments to callback
-      self.callback(*self.get_args_at_instance())
-
-
-
-    
-    def trigger(self):
-      """
-      helper function for trigger type button
-      """
-
-      # one time trigger upon pressed and released
-      self.state = True
-
-      # parse arguments to callback
-      self.callback(*self.get_args_at_instance())
-
-      # Trigger off
-      self.state = False
-
-
-    button_event = {
-      'toggle':toggle,
-      'trigger':trigger
-    }
-
-    button_event.get(
-      self.button_type,
-       lambda : None
-       )(self)
-
-  def pressed(self):
-    if self.button_type == 'trigger':
-      self.call()
-
-  def released(self):
-    if self.button_type == 'toggle':
-      self.call()
-
-
-
-  def current_cmd(self):
-
-    if self.state:
-      #ifdebug
-      #print("current command:{cmd}".format(cmd=str(self.OnCMD)))
-      #endif
-      return self.on_cmd
-      
-
-    else:
-      #ifdebug
-      #print("current command:{cmd}".format(cmd=str(self.OnCMD)))
-      #endif
-      return self.off_cmd
-
-
-
+    super().__init__(
+      key, 
+    {
+      'topics' : topics,
+      'switch' : {
+        'on' : on_cmd,
+        'off' : off_cmd
+      },
+      'args' : args
+    },
+    ['topics', 'switch', 'args'],
+    callback = callback,
+    button_attributes = {
+      'state' : state,
+      'button_type' : button_type
+      }
+    )
 
 class Listener:
   import subprocess
