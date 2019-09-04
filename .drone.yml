@@ -2,10 +2,6 @@
 kind: pipeline
 name: analysis
 
-platform:
-  os: linux
-  arch: arm64
-
 steps:
 - name: code-analysis
   image: aosapps/drone-sonar-plugin
@@ -14,21 +10,22 @@ steps:
       from_secret: sonar_host
     sonar_token:
       from_secret: sonar_token
-  wehn:
-    branch:
-      include:
-      - master
-      - feature/*
-    event:
-      include:
-      - push
-      - pull_request
-+   ver: 1.0
-+   timeout: 20
-+   sources: .
-+   level: DEBUG
+#   environment:
+#     sonar_host:
+#       from_secret: sonar_host
+#     sonar_token:
+#       from_secret: sonar_token
+#   commands:
+#       - ls -la
+#       - sonar-scanner -Dsonar.projectKey=${DRONE_REPO}
+#         -Dsonar.projectName=${DRONE_REPO}
+#         -Dsonar.host.url=$sonar_host
+#         -Dsonar.login=$sonar_token
+#         -Dsonar.sources=.
++   ver: 0.0.1
++   timeout: 120
++   level: TRACE
 +   showProfiling: true
-
 ---
 kind: pipeline
 name: python-3

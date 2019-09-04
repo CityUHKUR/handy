@@ -1,9 +1,7 @@
 # Handy
 ###### a input handler library
 ---
-[![Build Status](https://drone.deepmatter.me/api/badges/randyt1027/handy/status.svg)](https://drone.deepmatter.me/randyt1027/handy)
-[![Quality Gate Status](http://sonarqube.deepmatter.me/api/project_badges/measure?project=handy&metric=alert_status)](http://sonarqube.deepmatter.me/dashboard?id=handy)
-
+[![Build Status](https://drone.deepmatter.me/api/badges/hotung1027/handy/status.svg)](https://drone.deepmatter.me/hotung1027/handy)
 
 ## Modules
 ### Keyboard
@@ -12,9 +10,7 @@
 ```python
 Button(self, key, comm, state=False, callback=None, button_type='trigger')
 ```
-
 A `class` : `Button` represents a callback action on button is pressed(and release) depends on its button type
-
 Parameters
 ----------
       key -> str :
@@ -50,7 +46,6 @@ Returns
         current_command -> cmd
         args -> [args*]
     ]
-
 
 ##### call
 ```python
